@@ -13,7 +13,7 @@ from pyrogram import Client, filters, types, session
 
 BASE_FOLDER = Path(__file__).parent.absolute()
 logging.basicConfig(level=logging.WARNING, format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%y-%m-%d %H:%M:%S')
-Session.notice_displayed = True 
+Session.notice_displayed = True # Disable notice 
 
 class Bot:
     def __init__(self, folder_name=BASE_FOLDER / Path("secret_data")):
@@ -34,6 +34,9 @@ class Bot:
 
 
 def zipdir(dir_name):
+    """
+    Zip directory "dir_name" and name it as "zip_file"
+    """
     zip_file = BASE_FOLDER / f'data/{dir_name.name}.zip'
     open(zip_file, "w")
     zipf = zipfile.ZipFile(zip_file, 'w', zipfile.ZIP_DEFLATED)
@@ -45,6 +48,9 @@ def zipdir(dir_name):
 
 
 def send_data(data: str, user:str = "me", data_type:str = "text", caption: str = None):
+    """
+    Connect to bot and send data to user
+    """
     my_bot = Bot()
     with my_bot as app:
         if data_type == "text":
@@ -65,9 +71,12 @@ def send_data(data: str, user:str = "me", data_type:str = "text", caption: str =
 
 
 def main():
+    """
+    Parse args, validate data
+    """
     parser = argparse.ArgumentParser(description='Pipe stdout and files to telegram(via userbot)')
     parser.add_argument('message',  nargs='?', action="store", type=str, help='define text of message to send, html parsing enabled, overwrites pipes.')
-    parser.add_argument('-u', action="store", type=str, help='define user to send, default is you.')
+    parser.add_argument('-u', '--user', action="store", type=str, help='define user to send, default is you.')
     parser.add_argument('-f', '--file', action="store", type=str, help='send file, text will be sended as caption. If folder is sended, will zip and send')
     args = parser.parse_args()
     
@@ -83,6 +92,7 @@ def main():
     elif args.file is not None:
         pass
     else:
+        # Sending random data to yourself for testing, i.e. "0x668bde31670"
         logging.warning("No message to send, sending random hex numbers to me. For help, use -h, --help.")
         message_text = hex(random.randrange(0x10000000000, 0x99999999999))
     
