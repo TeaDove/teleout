@@ -1,3 +1,10 @@
+.vscode
+teleout/secret_data/*
+!teleout/secret_data/README.md
+teleout/data/*
+!teleout/data/README.md
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
