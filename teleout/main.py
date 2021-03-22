@@ -8,10 +8,12 @@ import select
 import random
 import zipfile
 
-from pyrogram import Client, filters, types
+from pyrogram.session import Session 
+from pyrogram import Client, filters, types, session
 
 BASE_FOLDER = Path(__file__).parent.absolute()
 logging.basicConfig(level=logging.WARNING, format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%y-%m-%d %H:%M:%S')
+Session.notice_displayed = True 
 
 class Bot:
     def __init__(self, folder_name=BASE_FOLDER / Path("secret_data")):
@@ -20,20 +22,11 @@ class Bot:
         self.__config.read(folder_name / "config.ini")
 
         self.app = Client(session_name=str(self.folder_name / "my_account"), api_id=self.__config['credentials']['pyrogram_api_id'],
-                    api_hash=self.__config['credentials']['pyrogram_api_hash'], parse_mode="html", no_updates=True) 
+                    api_hash=self.__config['credentials']['pyrogram_api_hash'], parse_mode="html", no_updates=True, hide_password=True) 
 
 
     def __enter__(self):
-        """
-        preventing self.app.start from printing info.
-        """
-        if (self.folder_name / "my_account").exists():
-            old_stdout = sys.stdout # backup current stdout
-            sys.stdout = open(os.devnull, "w")
-            self.app.start()
-            sys.stdout = old_stdout # reset old stdout
-        else:
-            self.app.start()
+        self.app.start()
         return self.app
     
     def __exit__(self, type, value, traceback):
