@@ -21,17 +21,19 @@ class Bot:
 
         self.app = Client(session_name=str(self.folder_name / "my_account"), api_id=self.__config['credentials']['pyrogram_api_id'],
                     api_hash=self.__config['credentials']['pyrogram_api_hash'], parse_mode="html", no_updates=True) 
-        
 
 
     def __enter__(self):
         """
         preventing self.app.start from printing info.
         """
-        old_stdout = sys.stdout # backup current stdout
-        sys.stdout = open(os.devnull, "w")
-        self.app.start()
-        sys.stdout = old_stdout # reset old stdout
+        if (self.folder_name / "my_account").exists():
+            old_stdout = sys.stdout # backup current stdout
+            sys.stdout = open(os.devnull, "w")
+            self.app.start()
+            sys.stdout = old_stdout # reset old stdout
+        else:
+            self.app.start()
         return self.app
     
     def __exit__(self, type, value, traceback):

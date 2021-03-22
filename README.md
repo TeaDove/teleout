@@ -13,7 +13,8 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   -u U                  define user to send, default is you.
-  -f FILE, --file FILE  send file, text will be sended as caption. If folder is sended, will zip and send
+  -f FILE, --file FILE  send file, text will be sended as caption. 
+        If folder is sended, will zip and send
 ```
 
 # Example
@@ -24,6 +25,6 @@ optional arguments:
 # Installation
 1. `pip3 install git+https://github.com/TeaDove/teleout`
 2. Go to folder with package. Should be smth like `~/.local/lib/python3.8/site-packages/teleout`
-3. In folder *secret_data* create file *config.ini*. See README.md in that folder fore more info.
+3. In folder *secret_data* create file *config.ini*. See [README.md](https://github.com/TeaDove/teleout/tree/master/teleout/secret_data) in that folder fore more info.
 4. start teleout with `teleout`, enter your loggin and password.
 5. Enjoy!
