@@ -106,7 +106,7 @@ def main():
             delete_file = True
             file = zipdir(file)
     
-    user = "me" if args.u is None else args.u
+    user = "me" if args.user is None else args.user
     if args.file is None:
         send_data(message_text, user = user, data_type="text")
     else:
