@@ -75,7 +75,7 @@ def main():
     Parse args, validate data
     """
     parser = argparse.ArgumentParser(description='Pipe stdout and files to telegram(via userbot)')
-    parser.add_argument('message',  nargs='?', action="store", type=str, help='define text of message to send, html parsing enabled, overwrites pipes.')
+    parser.add_argument('message',  nargs='*', action="store", type=str, help='define text of message to send, html parsing enabled, overwrites pipes.')
     parser.add_argument('-u', '--user', action="store", type=str, help='define user to send, default is you.')
     parser.add_argument('-f', '--file', action="store", type=str, help='send file, text will be sended as caption. If folder is sended, will zip and send')
     args = parser.parse_args()
@@ -85,8 +85,8 @@ def main():
         pipe = sys.stdin.read()
     
     message_text = None
-    if args.message is not None:
-        message_text = args.message
+    if args.message:
+        message_text = ' '.join(args.message)
     elif pipe is not None:
         message_text = pipe
     elif args.file is not None:
