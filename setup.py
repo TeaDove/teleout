@@ -1,5 +1,7 @@
 import setuptools
 
+# При обновление поменять version, download_url
+
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
@@ -12,7 +14,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/TeaDove/teleout",
-    download_url='https://github.com/TeaDove/teleout/archive/v1.0.1.tar.gz',
+    download_url='https://github.com/TeaDove/teleout/archive/v1.0.2.tar.gz',
     licence='gpl-3.0',
     keywords = ['TELEGRAM', 'PIPE', 'UTILITY'],   
     packages=setuptools.find_packages(),
