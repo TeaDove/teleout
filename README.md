@@ -1,5 +1,6 @@
 # Teleout
-Pipe stdout and files to telegram(via user)<br>
+Pipe stdout and files to telegram<br>
+This software uses userbots, so you can send messages from **your** account<br><br>
 Powered with love(and python with [pyrogram](https://github.com/pyrogram/pyrogram))
 
 # Features

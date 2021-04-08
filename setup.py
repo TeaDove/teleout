@@ -8,12 +8,20 @@ setuptools.setup(
     author_email="peter.ibragimov@gmail.com",
     description="Terminal utility, for sending data directly to telegram users via pipes, files(pure and ziped) or just text.",
     url="https://github.com/TeaDove/teleout",
+    licence='gpl-3.0',
+    keywords = ['TELEGRAM', 'PIPE', 'UTILITY'],   
     packages=setuptools.find_packages(),
     include_package_data=True,
     classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-        "Operating System :: UNIX",
+        'Development Status :: 5 - Production/Stable',
+        'Intended Audience :: Developers',
+        'Environment :: Console',
+        'Natural Language :: English',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Operating System :: Unix',
+        'Topic :: Utilities'
     ],
     python_requires='>=3.7',
     entry_points = {
