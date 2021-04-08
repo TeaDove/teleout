@@ -3,7 +3,7 @@ import setuptools
 
 setuptools.setup(
     name="teleout", 
-    version="1.0.0",
+    version="1.0.1",
     author="Peter Ibragimov",
     author_email="peter.ibragimov@gmail.com",
     description="Terminal utility, for sending data directly to telegram users via pipes, files(pure and ziped) or just text.",
