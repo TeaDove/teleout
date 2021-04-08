@@ -7,6 +7,7 @@ import sys
 import select
 import random
 import zipfile
+from getpass import getpass
 
 from pyrogram.session import Session 
 from pyrogram import Client, filters, types, session
@@ -122,8 +123,8 @@ def main():
     if not (config_file).exists() or args.new_app:
         if not (config_file).exists():
             print("No api_id and api_hash found, enter them\nYou can get them here: https://my.telegram.org/auth?to=apps")
-        api_id = input("Enter api_id: ")
-        api_hash = input("Enter api_hash: ")
+        api_id = getpass("Enter api_id: ")
+        api_hash = getpass("Enter api_hash: ")
         tmpl = open(BASE_FOLDER / Path("secret_data/config.ini.tmpl")).read()
         open(config_file, 'w').write(tmpl.format(api_id, api_hash))
 
