@@ -9,6 +9,8 @@ Powered with love(and python with [pyrogram](https://github.com/pyrogram/pyrogra
 4. Easy install and use
 5. Captions for files
 
+![Example](https://user-images.githubusercontent.com/12380279/114037653-d8ca2500-9889-11eb-9950-13fa22cb7906.mp4)
+
 # Manual
 ```                                                                    
 usage: teleout [-h] [-u U] [-f FILE] [message]
