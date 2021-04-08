@@ -8,6 +8,7 @@ setuptools.setup(
     author_email="peter.ibragimov@gmail.com",
     description="Terminal utility, for sending data directly to telegram users via pipes, files(pure and ziped) or just text.",
     url="https://github.com/TeaDove/teleout",
+    download_url='https://github.com/TeaDove/teleout/archive/v1.0.1.tar.gz',
     licence='gpl-3.0',
     keywords = ['TELEGRAM', 'PIPE', 'UTILITY'],   
     packages=setuptools.find_packages(),
