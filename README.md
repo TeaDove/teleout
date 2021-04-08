@@ -24,8 +24,9 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   -u USER, --user USER  specify user to send, default is you.
-  -f FILE, --file FILE  specify file to send, text will be sended 
-            as caption. If folder is specified, will zip and send             
+  -f FILE, --file FILE  send file, text will be sended as caption. If folder is sended, will zip and send
+  -c, --code            send text with <code> text to make it monospace
+  -F, --force-file      send text in file even if it is shorter than 4096 symbols
   --new-user            reloging to telegram
   --new-app             enter new api_id/api_hash combination
 ```
