@@ -5,8 +5,9 @@ import argparse
 import os
 import sys
 import select
-import random
+# import random
 import zipfile
+import re
 from getpass import getpass
 
 from pyrogram.session import Session 
@@ -80,6 +81,7 @@ def main():
     parser.add_argument('-f', '--file', action="store", type=str, help='send file, text will be sended as caption. If folder is sended, will zip and send')
     parser.add_argument('-c', '--code', action='store_true', help='send text with <code> text to make it monospace')
     parser.add_argument('-F', '--force-file', action='store_true', help='send text in file even if it is shorter than 4096 symbols')
+    parser.add_argument('--ansi-colors', action='store_true', help="don't remove ANSI escape codes from piped strings")
     parser.add_argument('--new-user', action='store_true', help='reloging to telegram')
     parser.add_argument('--new-app', action='store_true', help='enter new api_id/api_hash combination')
     args = parser.parse_args()
@@ -88,6 +90,9 @@ def main():
     pipe = None
     if select.select([sys.stdin, ], [], [], 0.0)[0]:
         pipe = sys.stdin.read()
+        if not args.ansi_colors:
+            ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+            pipe = ansi_escape.sub('', pipe)
     
     # Text handling
     message_text = None

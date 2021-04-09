@@ -3,9 +3,14 @@ Pipe stdout and files to telegram<br>
 This software uses userbots, so you can send messages from **your** account<br><br>
 Powered with love(and python with [pyrogram](https://github.com/pyrogram/pyrogram))
 
+# Examples
+- `ls -la | teleout -u teadove` - send output of `ls -la` to user [@TeaDove](https://t.me/teadove)
+- `teleout -u teadove -f main.py "<b>This is main.py!</b>"` - send file *main.py*, to [@TeaDove](https://t.me/teadove), with bolded text "This is main.py!"
+- `teleout -f data` - zip folder *data* and send it to *Saved Messages*
+
 # Features
 1. Send files, directories(they are ziped automatically), text messages directly to telegram
-2. Pipe to teleout
+2. Pipe to teleout(`ls | teleout` will work)
 3. HTML parse mode supported
 4. Easy install and use
 5. Captions for files
@@ -27,14 +32,10 @@ optional arguments:
   -f FILE, --file FILE  send file, text will be sended as caption. If folder is sended, will zip and send
   -c, --code            send text with <code> text to make it monospace
   -F, --force-file      send text in file even if it is shorter than 4096 symbols
+  --ansi-colors         don't remove ANSI escape codes from piped strings
   --new-user            reloging to telegram
   --new-app             enter new api_id/api_hash combination
 ```
-
-# Example
-- `ls -la | teleout -u teadove` - send output of `ls -la` to user [@TeaDove](https://t.me/teadove)
-- `teleout -u teadove -f main.py "<b>This is main.py!</b>"` - send file *main.py*, to [@TeaDove](https://t.me/teadove), with bolded text "This is main.py!"
-- `teleout -f data` - zip folder *data* and send it to *Saved Messages*
 
 # Installation
 1. ```pip3 install git+https://github.com/TeaDove/teleout```
@@ -55,5 +56,5 @@ tgcrypto
 1. Omit pyrogram errors while sending big files 
 2. Progress bars for big files and folders
 
-> for feedbacks, write me [here](https://t.me/teas_feedbacks_bot)
+> for feedbacks, write me [here](https://t.me/teas_feedbacks_bot)<br>
 inspired by https://termbin.com
