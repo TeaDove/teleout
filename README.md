@@ -53,11 +53,5 @@ pyrogram>=1.0.7
 tgcrypto
 ```
 
-# TODO
-1. Omit pyrogram errors while sending big files 
-2. Progress bars for big files and folders
-3. Handle "<" and ">" with <html> 
-4. Remove <code> if sending in file
-
 > for feedbacks, write me [here](https://t.me/teas_feedbacks_bot)<br>
 inspired by https://termbin.com
