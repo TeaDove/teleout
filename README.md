@@ -15,7 +15,7 @@ Powered with love(and python with [pyrogram](https://github.com/pyrogram/pyrogra
 4. Easy install and use
 5. Captions for files
 
-![Example](https://user-images.githubusercontent.com/12380279/114037653-d8ca2500-9889-11eb-9950-13fa22cb7906.mp4)
+<!-- ![Example](https://user-images.githubusercontent.com/12380279/114037653-d8ca2500-9889-11eb-9950-13fa22cb7906.mp4) -->
 
 # Manual
 ```                                                                    
@@ -32,13 +32,14 @@ optional arguments:
   -f FILE, --file FILE  send file, text will be sended as caption. If folder is sended, will zip and send
   -c, --code            send text with <code> text to make it monospace
   -F, --force-file      send text in file even if it is shorter than 4096 symbols
+  --no-html             do not parse as html
   --ansi-colors         don't remove ANSI escape codes from piped strings
   --new-user            reloging to telegram
   --new-app             enter new api_id/api_hash combination
 ```
 
 # Installation
-1. ```pip3 install git+https://github.com/TeaDove/teleout```
+1. ```pip install teleout```
 2. Get api\_id and api\_hash from [here](https://my.telegram.org/auth?to=apps)
 3. Start teleout with `teleout`, enter your api\_id, api\_hash, loggin, code and password.
 5. Enjoy!<br>
@@ -55,6 +56,8 @@ tgcrypto
 # TODO
 1. Omit pyrogram errors while sending big files 
 2. Progress bars for big files and folders
+3. Handle "<" and ">" with <html> 
+4. Remove <code> if sending in file
 
 > for feedbacks, write me [here](https://t.me/teas_feedbacks_bot)<br>
 inspired by https://termbin.com
