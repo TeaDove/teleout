@@ -9,14 +9,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="teleout", 
-    version="1.0.6",
+    version="1.0.7",
     author="Peter Ibragimov",
     author_email="peter.ibragimov@gmail.com",
     description="Terminal utility, for sending data directly to telegram users via pipes, files(pure and ziped) or just text.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/TeaDove/teleout",
-    download_url='https://github.com/TeaDove/teleout/archive/v1.0.6.tar.gz',
+    download_url='https://github.com/TeaDove/teleout/archive/v1.0.7.tar.gz',
     licence='gpl-3.0',
     keywords = ['TELEGRAM', 'PIPE', 'UTILITY'],   
     packages=setuptools.find_packages(),
