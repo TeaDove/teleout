@@ -4,8 +4,8 @@ This software uses userbots, so you can send messages from **your** account<br><
 Powered with love(and python with [pyrogram](https://github.com/pyrogram/pyrogram))
 
 # Examples
-- `ls -la | teleout -u teadove` - send output of `ls -la` to user [@TeaDove](https://t.me/teadove)
-- `teleout -u teadove -f main.py "<b>This is main.py!</b>"` - send file *main.py*, to [@TeaDove](https://t.me/teadove), with bolded text "This is main.py!"
+- `ls -la | teleout -u teadove -c` - send output of `ls -la` to user [@TeaDove](https://t.me/teadove) with monospace font
+- `teleout -u teadove -f main.py "<b>This is main.py!</b>" --html` - send file *main.py*, to [@TeaDove](https://t.me/teadove), with bolded text "This is main.py!"
 - `teleout -f data` - zip folder *data* and send it to *Saved Messages*
 
 # Features
@@ -19,9 +19,9 @@ Powered with love(and python with [pyrogram](https://github.com/pyrogram/pyrogra
 
 # Manual
 ```                                                                    
-usage: main.py [-h] [-u USER] [-f FILE] [--new-user] [--new-app] [message [message ...]]
+usage: teleout [-h] [-u USER] [-f FILE] [-c] [-F] [--new-user] [--new-app] [--html] [--ansi-colors] [message [message ...]]
 
-Pipe stdout and files to telegram(via userbot)
+Pipe stdout and files to telegram(via userbot).
 
 positional arguments:
   message               specify text of message to send, html parsing enabled, overwrites pipes.
@@ -30,12 +30,12 @@ optional arguments:
   -h, --help            show this help message and exit
   -u USER, --user USER  specify user to send, default is you.
   -f FILE, --file FILE  send file, text will be sended as caption. If folder is sended, will zip and send
-  -c, --code            send text with <code> text to make it monospace
+  -c, --code            send text with <code> text to make it monospace, apply tags escaping and send as html
   -F, --force-file      send text in file even if it is shorter than 4096 symbols
-  --no-html             do not parse as html
-  --ansi-colors         don't remove ANSI escape codes from piped strings
   --new-user            reloging to telegram
   --new-app             enter new api_id/api_hash combination
+  --html                parse as html and apply <b>, <i> etc. tags
+  --ansi-colors         don't remove ANSI escape codes from piped strings
 ```
 
 # Installation
@@ -50,8 +50,12 @@ Works fine on Linux and Mac OS.
 ```
 python>=3.7
 pyrogram>=1.0.7
+tqdm>=4.57.0
 tgcrypto
 ```
+# TODO
+- [ ] UI for sending messages to chats without username
+- [ ] Bots support
 
 > for feedbacks, write me [here](https://t.me/teas_feedbacks_bot)<br>
 inspired by https://termbin.com

@@ -5,10 +5,10 @@ import argparse
 import os
 import sys
 import select
-# import random
 import zipfile
 import re
 from getpass import getpass
+import html
 
 from tqdm import tqdm
 from pyrogram.session import Session 
@@ -78,16 +78,16 @@ def main():
     """
     Parse args, validate data
     """
-    parser = argparse.ArgumentParser(description='Pipe stdout and files to telegram(via userbot)')
+    parser = argparse.ArgumentParser(description='Pipe stdout and files to telegram(via userbot).')
     parser.add_argument('message',  nargs='*', action="store", type=str, help='specify text of message to send, html parsing enabled, overwrites pipes.')
     parser.add_argument('-u', '--user', action="store", type=str, help='specify user to send, default is you.')
     parser.add_argument('-f', '--file', action="store", type=str, help='send file, text will be sended as caption. If folder is sended, will zip and send')
-    parser.add_argument('-c', '--code', action='store_true', help='send text with <code> text to make it monospace')
+    parser.add_argument('-c', '--code', action='store_true', help='send text with <code> text to make it monospace, apply tags escaping and send as html')
     parser.add_argument('-F', '--force-file', action='store_true', help='send text in file even if it is shorter than 4096 symbols')
-    parser.add_argument('--no-html', action='store_true', help='do not parse as html')
-    parser.add_argument('--ansi-colors', action='store_true', help="don't remove ANSI escape codes from piped strings")
     parser.add_argument('--new-user', action='store_true', help='reloging to telegram')
     parser.add_argument('--new-app', action='store_true', help='enter new api_id/api_hash combination')
+    parser.add_argument('--html', action='store_true', help='parse as html and apply <b>, <i> etc. tags')
+    parser.add_argument('--ansi-colors', action='store_true', help="don't remove ANSI escape codes from piped strings")
     args = parser.parse_args()
     
     # Pipe handling
@@ -98,10 +98,10 @@ def main():
             ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
             pipe = ansi_escape.sub('', pipe)
     
-    if args.no_html:
-        parse_mode = None
-    else:
+    if args.html:
         parse_mode = "html"
+    else:
+        parse_mode = None
 
     # Text handling
     message_text = None
@@ -112,16 +112,20 @@ def main():
     elif args.file is not None:
         pass
     else:
-        print("No message to send, sending test message to Saved Messages. For help, use -h, --help.")
+        print("No message to send, sending lirum test message to Saved Messages. For help, use -h, --help.")
         # message_text = hex(random.randrange(0x10000000000, 0x99999999999))
         message_text = f"Hello World!\n\n\n<i>With Love from teleout</i>"
+        parse_mode = "html"
 
     as_file = False
     if message_text is None or len(message_text) > 4000 or args.force_file:
         as_file = True
 
     if args.code and not as_file:
+        message_text = html.escape(message_text)
         message_text = "<code>{}</code>".format(message_text)
+        parse_mode = 'html'
+
 
     # File handling
     delete_file = False
