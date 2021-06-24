@@ -8,17 +8,17 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="teleout", 
-    version="1.0.8",
+    name="teleout",
+    version="1.0.9",
     author="Peter Ibragimov",
     author_email="peter.ibragimov@gmail.com",
     description="Terminal utility, for sending data directly to telegram users via pipes, files(pure and ziped) or just text.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/TeaDove/teleout",
-    download_url='https://github.com/TeaDove/teleout/archive/v1.0.8.tar.gz',
+    download_url='https://github.com/TeaDove/teleout/archive/v1.0.9.tar.gz',
     licence='gpl-3.0',
-    keywords = ['TELEGRAM', 'PIPE', 'UTILITY'],   
+    keywords = ['TELEGRAM', 'PIPE', 'UTILITY'],
     packages=setuptools.find_packages(),
     include_package_data=True,
     classifiers=[

@@ -11,7 +11,7 @@ from getpass import getpass
 import html
 
 from tqdm import tqdm
-from pyrogram.session import Session 
+from pyrogram.session import Session
 from pyrogram import Client, filters, types, session
 
 BASE_FOLDER = Path(__file__).parent.absolute()
@@ -25,12 +25,12 @@ class Bot:
         self.__config.read(folder_name / "config.ini")
 
         self.app = Client(session_name=str(self.folder_name / "my_account"), api_id=self.__config['credentials']['pyrogram_api_id'],
-                    api_hash=self.__config['credentials']['pyrogram_api_hash'], parse_mode="html", no_updates=True, hide_password=True) 
+                    api_hash=self.__config['credentials']['pyrogram_api_hash'], parse_mode="html", no_updates=True, hide_password=True)
 
     def __enter__(self):
         self.app.start()
         return self.app
-    
+
     def __exit__(self, type, value, traceback):
         self.app.stop()
 
@@ -65,9 +65,9 @@ def send_data(data: str, user:str = "me", data_type:str = "text", caption: str =
             else:
                 app.send_message(user, data, parse_mode = parse_mode)
         elif data_type == "file":
-            with tqdm(total=100) as pbar:  
+            with tqdm(total=100) as pbar:
                 def progress(current, total):
-                    pbar.update(round(current * 100 / total, 4) - pbar.n) 
+                    pbar.update(round(current * 100 / total, 4) - pbar.n)
                 if caption is not None:
                     app.send_document(user, data, caption=caption[:1024], progress=progress)
                 else:
@@ -89,7 +89,7 @@ def main():
     parser.add_argument('--html', action='store_true', help='parse as html and apply <b>, <i> etc. tags')
     parser.add_argument('--ansi-colors', action='store_true', help="don't remove ANSI escape codes from piped strings")
     args = parser.parse_args()
-    
+
     # Pipe handling
     pipe = None
     if select.select([sys.stdin, ], [], [], 0.0)[0]:
@@ -97,7 +97,7 @@ def main():
         if not args.ansi_colors:
             ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
             pipe = ansi_escape.sub('', pipe)
-    
+
     if args.html:
         parse_mode = "html"
     else:
@@ -137,7 +137,7 @@ def main():
         elif file.is_dir():
             delete_file = True
             file = zipdir(file)
-    
+
     # New user handling
     if args.new_user:
         session_file = BASE_FOLDER / Path("secret_data/my_account.session")
@@ -163,4 +163,7 @@ def main():
         file.unlink()
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit("\nCancelling...")
