@@ -1,7 +1,9 @@
+.idea
+
 .vscode
 teleout/secret_data/*
 !teleout/secret_data/README.md
-!teleout/secret_data/config.ini.tmpl
+!teleout/config.ini.tmpl
 teleout/data/*
 !teleout/data/README.md
 
@@ -30,7 +32,7 @@ var/
 wheels/
 pip-wheel-metadata/
 share/python-wheels/
-*.egg-info/
+.egg-info/
 .installed.cfg
 *.egg
 MANIFEST
