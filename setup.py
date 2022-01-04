@@ -12,7 +12,8 @@ setuptools.setup(
     version="1.0.9",
     author="Peter Ibragimov",
     author_email="peter.ibragimov@gmail.com",
-    description="Terminal utility, for sending data directly to telegram users via pipes, files(pure and ziped) or just text.",
+    description="Terminal utility, for sending data directly to telegram users from bot via pipes, "
+    "files(pure and zipped) or just text.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/TeaDove/teleout",
@@ -34,5 +35,5 @@ setuptools.setup(
     ],
     python_requires=">=3.7",
     entry_points={"console_scripts": ["teleout=teleout.main:main"]},
-    install_requires=["pyrogram>=1.0.7", "tqdm>=4.57.0", "tgcrypto"],
+    install_requires=["requests==2.27.0"],
 )
