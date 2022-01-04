@@ -26,6 +26,7 @@ BASE_URL = "https://api.telegram.org/bot{}/sendMessage"
 
 def send_data(
     data: Union[Path, str],
+    quite: bool,
     token: str,
     user: str,
     data_type: str = "text",
@@ -42,15 +43,20 @@ def send_data(
             with tempfile.NamedTemporaryFile(prefix="message_", suffix=".txt") as fp:
                 fp.write(data.encode())
                 fp.seek(0)
+                params = {"chat_id": user}
+                if quite:
+                    params["disable_notification"] = True
                 response = requests.post(
                     urljoin(compiled_url, "sendDocument"),
-                    params={"chat_id": user},
+                    params=params,
                     files={"document": fp},
                 )
         else:
             params = {"chat_id": user, "text": data}
             if parse_mode is not None:
                 params["parse_mode"] = parse_mode
+            if quite:
+                params["disable_notification"] = True
             response = requests.post(
                 urljoin(compiled_url, "sendMessage"), params=params
             )
@@ -60,6 +66,8 @@ def send_data(
             params["caption"] = caption[:1024]
         if parse_mode is not None:
             params["parse_mode"] = parse_mode
+        if quite:
+            params["disable_notification"] = True
         fp = open(data, "rb")
         response = requests.post(
             urljoin(compiled_url, "sendDocument"),
@@ -125,6 +133,12 @@ def parser_handler():
         "--new",
         action="store_true",
         help="use with --token or --user to set new default",
+    )
+    parser.add_argument(
+        "-q",
+        "--quite",
+        action="store_true",
+        help="send message without notifications, default is false",
     )
     parser.add_argument(
         "--html", action="store_true", help="parse as html and apply <b>, <i> etc. tags"
@@ -221,6 +235,7 @@ def parser_handler():
                 f"Cannot send directory, zip it first with: zip -r {filepath}.zip {filepath}"
             )
 
+    quite = args.quite or False
     if args.file is None:
         send_data(
             message_text,
@@ -229,6 +244,7 @@ def parser_handler():
             data_type="text",
             as_file=as_file,
             parse_mode=parse_mode,
+            quite=quite,
         )
     else:
         send_data(
@@ -237,6 +253,7 @@ def parser_handler():
             caption=message_text,
             user=user,
             data_type="file",
+            quite=quite,
         )
 
 

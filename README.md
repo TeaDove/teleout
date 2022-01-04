@@ -16,7 +16,7 @@ Powered with love
 
 # Manual
 ```shell                                                                    
-usage: main.py [-h] [-u USER] [-f FILE] [-c] [-F] [-t TOKEN] [-n] [--html] [--ansi-colors] [message [message ...]]
+usage: main.py [-h] [-u USER] [-f FILE] [-c] [-F] [-t TOKEN] [-n] [-q] [--html] [--ansi-colors] [message [message ...]]
 
 Pipe stdout and files to telegram(via bots).
 
@@ -32,8 +32,10 @@ optional arguments:
   -t TOKEN, --token TOKEN
                         specify telegram api token. if not set will use default
   -n, --new             use with --token or --user to set new default
+  -q, --quite           send message without notifications, default is false
   --html                parse as html and apply <b>, <i> etc. tags
   --ansi-colors         don't remove ANSI escape codes from piped strings
+
 ```
 
 # Installation
