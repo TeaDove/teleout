@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from typing import Union
 from pathlib import Path
 from urllib.parse import urljoin
@@ -8,7 +10,6 @@ import json
 from json.decoder import JSONDecodeError
 import sys
 import select
-import zipfile
 import re
 import html
 import tempfile
@@ -23,28 +24,10 @@ CONFIG_FILE = CONFIG_FOLDER / "teleout.json"
 BASE_URL = "https://api.telegram.org/bot{}/sendMessage"
 
 
-def zipdir(dir_name: Path):
-    """
-    Zip directory "dir_name" and name it as "zip_file"
-    """
-    fp = tempfile.NamedTemporaryFile(
-        delete=False,
-    )
-    zipf = zipfile.ZipFile(fp, "w", zipfile.ZIP_DEFLATED)
-    for root, _, files in os.walk(dir_name):
-        for file in files:
-            zipf.write(
-                os.path.join(root, file),
-                os.path.relpath(os.path.join(root, file), os.path.join(dir_name, "..")),
-            )
-    zipf.close()
-    return fp.name
-
-
 def send_data(
     data: Union[Path, str],
     token: str,
-    user: str = "me",
+    user: str,
     data_type: str = "text",
     caption: str = None,
     as_file: bool = False,
@@ -56,26 +39,30 @@ def send_data(
     compiled_url = BASE_URL.format(token)
     if data_type == "text":
         if as_file:
-            with tempfile.TemporaryFile() as fp:
-                fp.write(data)
+            with tempfile.NamedTemporaryFile(prefix="message_", suffix=".txt") as fp:
+                fp.write(data.encode())
+                fp.seek(0)
                 response = requests.post(
                     urljoin(compiled_url, "sendDocument"),
-                    json={"chat_id": user},
+                    params={"chat_id": user},
                     files={"document": fp},
                 )
         else:
             params = {"chat_id": user, "text": data}
             if parse_mode is not None:
                 params["parse_mode"] = parse_mode
-            response = requests.post(urljoin(compiled_url, "sendMessage"), json=params)
+            response = requests.post(
+                urljoin(compiled_url, "sendMessage"), params=params
+            )
     elif data_type == "file":
         params = {"chat_id": user}
         if caption is not None:
             params["caption"] = caption[:1024]
+        fp = open(data, "rb")
         response = requests.post(
             urljoin(compiled_url, "sendDocument"),
-            json=params,
-            files={"document": data},
+            params=params,
+            files={"document": fp},
         )
 
     if not response.ok:
@@ -172,29 +159,10 @@ def main():
         pass
     else:
         print(
-            "No message to send, sending lirum test message to Saved Messages. For help, use -h, --help."
+            "No message to send, sending lirum test message. For help, use -h, --help."
         )
-        # message_text = hex(random.randrange(0x10000000000, 0x99999999999))
         message_text = f"Hello World!\n\n\n<i>With Love from teleout</i>"
         parse_mode = "html"
-
-    as_file = False
-    if message_text is None or len(message_text) > 4000 or args.force_file:
-        as_file = True
-
-    if args.code and not as_file:
-        message_text = html.escape(message_text)
-        message_text = "<code>{}</code>".format(message_text)
-        parse_mode = "html"
-
-    # File handling
-    delete_file = False
-    if args.file is not None:
-        filepath = Path(args.file)
-        if not filepath.exists():
-            sys.exit(f'File "{filepath}" does not exists!')
-        elif filepath.is_dir():
-            filepath = zipdir(filepath)
 
     try:
         config_dict = json.load(open(CONFIG_FILE, "r"))
@@ -214,6 +182,25 @@ def main():
         config_dict["user"] = user
 
     json.dump(config_dict, open(CONFIG_FILE, "w"))
+
+    as_file = False
+    if message_text is None or len(message_text) > 4000 or args.force_file:
+        as_file = True
+
+    if args.code and not as_file:
+        message_text = html.escape(message_text)
+        message_text = "<code>{}</code>".format(message_text)
+        parse_mode = "html"
+
+    # File handling
+    filepath = None if args.file is None else Path(args.file)
+    if filepath is not None:
+        if not filepath.exists():
+            sys.exit(f'File "{filepath}" does not exists!')
+        elif filepath.is_dir():
+            sys.exit(
+                f"Cannot send directory, zip it first with: zip -r {filepath}.zip {filepath}"
+            )
 
     if args.file is None:
         send_data(
