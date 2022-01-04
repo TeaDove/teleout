@@ -16,7 +16,7 @@ Powered with love
 
 # Manual
 ```shell                                                                    
-usage: teleout [-h] [-u USER] [-f FILE] [-c] [-F] [-t TOKEN] [--html] [--ansi-colors] [message [message ...]]
+usage: main.py [-h] [-u USER] [-f FILE] [-c] [-F] [-t TOKEN] [-n] [--html] [--ansi-colors] [message [message ...]]
 
 Pipe stdout and files to telegram(via bots).
 
@@ -31,6 +31,7 @@ optional arguments:
   -F, --force-file      send text in file even if it is shorter than 4096 symbols
   -t TOKEN, --token TOKEN
                         specify telegram api token. if not set will use default
+  -n, --new             use with --token or --user to set new default
   --html                parse as html and apply <b>, <i> etc. tags
   --ansi-colors         don't remove ANSI escape codes from piped strings
 ```

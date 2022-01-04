@@ -19,7 +19,7 @@ import requests
 CONFIG_FOLDER = Path(os.path.expanduser("~")) / ".config"
 CONFIG_FOLDER.mkdir(exist_ok=True)
 CONFIG_FILE = CONFIG_FOLDER / "teleout.json"
-
+CONFIG_FILE.touch(exist_ok=True)
 
 BASE_URL = "https://api.telegram.org/bot{}/sendMessage"
 
@@ -68,7 +68,9 @@ def send_data(
         )
 
     if not response.ok:
-        sys.exit(f"{response.status_code}: {response.text}")
+        sys.exit(
+            f"Error from telegram!\nstatus_code: {response.status_code}\nContent: {response.text}"
+        )
 
 
 def parser_handler():
@@ -117,6 +119,12 @@ def parser_handler():
         action="store",
         type=str,
         help="specify telegram api token. " "if not set will use default",
+    )
+    parser.add_argument(
+        "-n",
+        "--new",
+        action="store_true",
+        help="use with --token or --user to set new default",
     )
     parser.add_argument(
         "--html", action="store_true", help="parse as html and apply <b>, <i> etc. tags"
@@ -180,7 +188,19 @@ def parser_handler():
         user = input("Enter chat id: ")
         config_dict["user"] = user
 
+    if args.new:
+        if args.token:
+            config_dict["token"] = token
+            print("New token saved!")
+        elif args.user:
+            config_dict["user"] = user
+            print("New chat_id saved!")
+        else:
+            sys.exit("Error, no --user or --token specified")
+
     json.dump(config_dict, open(CONFIG_FILE, "w"))
+    if args.new:
+        return
 
     as_file = False
     if message_text is None or len(message_text) > 4000 or args.force_file:
