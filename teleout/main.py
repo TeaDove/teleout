@@ -1,139 +1,103 @@
+#!/usr/bin/env python3
+
 from typing import Union
-import logging
-import configparser
 from pathlib import Path
+from urllib.parse import urljoin
+from getpass import getpass
 import argparse
 import os
+import json
+from json.decoder import JSONDecodeError
 import sys
 import select
-import zipfile
 import re
-from getpass import getpass
 import html
 import tempfile
 
-from tqdm import tqdm
-from pyrogram.session import Session
-from pyrogram import Client
+import requests
 
-CONFIG_FOLDER = Path(os.path.expanduser("~")) / ".config/teleout"
+CONFIG_FOLDER = Path(os.path.expanduser("~")) / ".config"
 CONFIG_FOLDER.mkdir(exist_ok=True)
-
-logging.basicConfig(
-    level=logging.CRITICAL,
-    format="%(asctime)s %(name)-12s %(levelname)-8s %(message)s",
-    datefmt="%y-%m-%d %H:%M:%S",
-)
-Session.notice_displayed = True  # Disable notice from pyrogram
-config_tmpl = """
-[credentials]
-pyrogram_api_id = {0}
-pyrogram_api_hash = {1}
-"""
-config = configparser.ConfigParser()
-config.read(CONFIG_FOLDER / "config.ini")
+CONFIG_FILE = CONFIG_FOLDER / "teleout.json"
 
 
-class Bot:
-    def __init__(self, folder_name=CONFIG_FOLDER):
-        self.folder_name = folder_name
-
-        self.app = Client(
-            session_name=str(self.folder_name / "my_account"),
-            api_id=config["credentials"]["pyrogram_api_id"],
-            api_hash=config["credentials"]["pyrogram_api_hash"],
-            parse_mode="html",
-            no_updates=True,
-            hide_password=True,
-        )
-
-    def __enter__(self):
-        self.app.start()
-        return self.app
-
-    def __exit__(self, type, value, traceback):
-        self.app.stop()
-
-
-def zipdir(dir_name: Path):
-    """
-    Zip directory "dir_name" and name it as "zip_file"
-    """
-    fp = tempfile.NamedTemporaryFile(
-        delete=False,
-    )
-    zipf = zipfile.ZipFile(fp, "w", zipfile.ZIP_DEFLATED)
-    for root, _, files in os.walk(dir_name):
-        for file in files:
-            zipf.write(
-                os.path.join(root, file),
-                os.path.relpath(os.path.join(root, file), os.path.join(dir_name, "..")),
-            )
-    zipf.close()
-    return fp.name
+BASE_URL = "https://api.telegram.org/bot{}/sendMessage"
 
 
 def send_data(
     data: Union[Path, str],
-    user: str = "me",
+    token: str,
+    user: str,
     data_type: str = "text",
     caption: str = None,
     as_file: bool = False,
-    parse_mode="html",
+    parse_mode: str = "html",
 ):
     """
     Connect to bot and send data to user
     """
-    my_bot = Bot()
-    with my_bot as app:
-        if data_type == "text":
-            if as_file:
-                with tempfile.TemporaryFile() as fp:
-                    fp.write(data)
-                    app.send_document(user, fp)
-            else:
-                app.send_message(user, data, parse_mode=parse_mode)
-        elif data_type == "file":
-            with tqdm(total=100) as pbar:
+    compiled_url = BASE_URL.format(token)
+    if data_type == "text":
+        if as_file:
+            with tempfile.NamedTemporaryFile(prefix="message_", suffix=".txt") as fp:
+                fp.write(data.encode())
+                fp.seek(0)
+                response = requests.post(
+                    urljoin(compiled_url, "sendDocument"),
+                    params={"chat_id": user},
+                    files={"document": fp},
+                )
+        else:
+            params = {"chat_id": user, "text": data}
+            if parse_mode is not None:
+                params["parse_mode"] = parse_mode
+            response = requests.post(
+                urljoin(compiled_url, "sendMessage"), params=params
+            )
+    elif data_type == "file":
+        params = {"chat_id": user}
+        if caption is not None:
+            params["caption"] = caption[:1024]
+        if parse_mode is not None:
+            params["parse_mode"] = parse_mode
+        fp = open(data, "rb")
+        response = requests.post(
+            urljoin(compiled_url, "sendDocument"),
+            params=params,
+            files={"document": fp},
+        )
 
-                def progress(current, total):
-                    pbar.update(round(current * 100 / total, 4) - pbar.n)
-
-                if caption is not None:
-                    app.send_document(
-                        user, data, caption=caption[:1024], progress=progress
-                    )
-                else:
-                    app.send_document(user, data, progress=progress)
+    if not response.ok:
+        sys.exit(f"{response.status_code}: {response.text}")
 
 
-def main():
+def parser_handler():
     """
     Parse args, validate data
     """
     parser = argparse.ArgumentParser(
-        description="Pipe stdout and files to telegram(via userbot)."
+        description="Pipe stdout and files to telegram(via bots)."
     )
     parser.add_argument(
         "message",
         nargs="*",
         action="store",
         type=str,
-        help="specify text of message to send, html parsing enabled, overwrites pipes.",
+        help="specify text of message to send, overwrites pipes.",
     )
     parser.add_argument(
         "-u",
         "--user",
         action="store",
         type=str,
-        help="specify user to send, default is you.",
+        help="specify user with chat_id to send",
     )
     parser.add_argument(
         "-f",
         "--file",
         action="store",
         type=str,
-        help="send file, text will be sended as caption. If folder is sended, will zip and send",
+        help="send file, text will be sent as caption.",
     )
     parser.add_argument(
         "-c",
@@ -147,9 +111,12 @@ def main():
         action="store_true",
         help="send text in file even if it is shorter than 4096 symbols",
     )
-    parser.add_argument("--new-user", action="store_true", help="reloging to telegram")
     parser.add_argument(
-        "--new-app", action="store_true", help="enter new api_id/api_hash combination"
+        "-t",
+        "--token",
+        action="store",
+        type=str,
+        help="specify telegram api token. " "if not set will use default",
     )
     parser.add_argument(
         "--html", action="store_true", help="parse as html and apply <b>, <i> etc. tags"
@@ -191,11 +158,29 @@ def main():
         pass
     else:
         print(
-            "No message to send, sending lirum test message to Saved Messages. For help, use -h, --help."
+            "No message to send, sending lirum test message. For help, use -h, --help."
         )
-        # message_text = hex(random.randrange(0x10000000000, 0x99999999999))
         message_text = f"Hello World!\n\n\n<i>With Love from teleout</i>"
         parse_mode = "html"
+
+    try:
+        config_dict = json.load(open(CONFIG_FILE, "r"))
+    except JSONDecodeError:
+        config_dict = {}
+
+    token = args.token or config_dict.get("token")
+    if token is None:
+        print("No bot token found, enter it\nYou can find it in @BotFather")
+        token = getpass("Enter token: ")
+        config_dict["token"] = token
+
+    user = args.user or config_dict.get("user")
+    if user is None:
+        print("No chat id found, enter it\nYou can find it in @get_useridbot")
+        user = input("Enter chat id: ")
+        config_dict["user"] = user
+
+    json.dump(config_dict, open(CONFIG_FILE, "w"))
 
     as_file = False
     if message_text is None or len(message_text) > 4000 or args.force_file:
@@ -207,47 +192,40 @@ def main():
         parse_mode = "html"
 
     # File handling
-    delete_file = False
-    if args.file is not None:
-        filepath = Path(args.file)
+    filepath = None if args.file is None else Path(args.file)
+    if filepath is not None:
         if not filepath.exists():
             sys.exit(f'File "{filepath}" does not exists!')
         elif filepath.is_dir():
-            filepath = zipdir(filepath)
-
-    # New user handling
-    if args.new_user:
-        session_file = CONFIG_FOLDER / "my_account.session"
-        if session_file.exists():
-            session_file.unlink()
-
-    # New app id and hash handling
-    config_file = CONFIG_FOLDER / "config.ini"
-    if not config_file.exists() or args.new_app:
-        if not config_file.exists():
-            print(
-                "No api_id and api_hash found, enter them\nYou can get them here: https://my.telegram.org/auth?to=apps"
+            sys.exit(
+                f"Cannot send directory, zip it first with: zip -r {filepath}.zip {filepath}"
             )
-        api_id = getpass("Enter api_id: ")
-        api_hash = getpass("Enter api_hash: ")
-        with open(config_file, "w") as fp:
-            fp.write(config_tmpl.format(api_id, api_hash))
 
-    user = "me" if args.user is None else args.user
     if args.file is None:
         send_data(
             message_text,
+            token=token,
             user=user,
             data_type="text",
             as_file=as_file,
             parse_mode=parse_mode,
         )
     else:
-        send_data(filepath, caption=message_text, user=user, data_type="file")
+        send_data(
+            filepath,
+            token=token,
+            caption=message_text,
+            user=user,
+            data_type="file",
+        )
+
+
+def main():
+    try:
+        parser_handler()
+    except KeyboardInterrupt:
+        sys.exit("\nCancelling...")
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        sys.exit("\nCancelling...")
+    main()
