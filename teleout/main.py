@@ -58,6 +58,8 @@ def send_data(
         params = {"chat_id": user}
         if caption is not None:
             params["caption"] = caption[:1024]
+        if parse_mode is not None:
+            params["parse_mode"] = parse_mode
         fp = open(data, "rb")
         response = requests.post(
             urljoin(compiled_url, "sendDocument"),
@@ -69,7 +71,7 @@ def send_data(
         sys.exit(f"{response.status_code}: {response.text}")
 
 
-def main():
+def parser_handler():
     """
     Parse args, validate data
     """
@@ -81,21 +83,21 @@ def main():
         nargs="*",
         action="store",
         type=str,
-        help="specify text of message to send, html parsing enabled, overwrites pipes.",
+        help="specify text of message to send, overwrites pipes.",
     )
     parser.add_argument(
         "-u",
         "--user",
         action="store",
         type=str,
-        help="specify user with chat_id to send, if default if not specified, will prompted to do it",
+        help="specify user with chat_id to send",
     )
     parser.add_argument(
         "-f",
         "--file",
         action="store",
         type=str,
-        help="send file, text will be sent as caption. If folder is send, will zip and send",
+        help="send file, text will be sent as caption.",
     )
     parser.add_argument(
         "-c",
@@ -115,9 +117,6 @@ def main():
         action="store",
         type=str,
         help="specify telegram api token. " "if not set will use default",
-    )
-    parser.add_argument(
-        "--new-app", action="store_true", help="enter new api_id/api_hash combination"
     )
     parser.add_argument(
         "--html", action="store_true", help="parse as html and apply <b>, <i> etc. tags"
@@ -221,8 +220,12 @@ def main():
         )
 
 
-if __name__ == "__main__":
+def main():
     try:
-        main()
+        parser_handler()
     except KeyboardInterrupt:
         sys.exit("\nCancelling...")
+
+
+if __name__ == "__main__":
+    main()
