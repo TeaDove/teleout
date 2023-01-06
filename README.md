@@ -39,16 +39,15 @@ optional arguments:
 ```
 
 # Installation
-1.
-- From pip as package  
-```pip install teleout```
-- From git as script
+1. From pip as package  
+```pip install teleout```  
+or from git as script
 ```shell
 wget https://raw.githubusercontent.com/TeaDove/teleout/master/teleout/main.py -O teleout.py && chmod u+x teleout.py
 ```
-3. Get bot token from [@BotFather](https://t.me/BotFather)
-4. Start teleout with `teleout`, enter your token, default chat id. All data will be saved in `~/.config/teleout.json`
-5. Enjoy!<br>
+2. Get bot token from [@BotFather](https://t.me/BotFather)
+3. Start teleout with `teleout`, enter your token, default chat id. All data will be saved in `~/.config/teleout.json`
+4. Enjoy!<br>
 Works fine on Linux and Mac OS. 
 > don't worry, there are no sniffer and smth like that
 
