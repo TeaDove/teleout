@@ -1,7 +1,8 @@
 # Teleout
 Pipe stdout and files to telegram  
 This software uses telegram bots  
-Powered with love
+Powered with love<br>
+Go version: https://github.com/teadove/goteleout
 
 # Examples
 - `ls -la | teleout -u 418878871 -c` - send output of `ls -la` to chat `418878871` with monospace font
